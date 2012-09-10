@@ -73,8 +73,8 @@ def asciiprob():
 #         g[i]='_' 
 # print g
 
-xorpairs = computepairwisexor(cba)
-numct = len(cba)
+xorpairs = computepairwisexor(cba[0:-1])
+numct = len(cba) - 1
 minct = len(cba[-1])
 
 # Count the number of alpha (A-Za-z) characters at each position
@@ -114,7 +114,37 @@ def guesskey(cand, ntop):
         # print "i %i" % i
         # print "idx " + repr(idx)
         # print "keyfrag " + repr(cba[idx][i])
-        res.extend(chr(cba[idx][i]))
+        res.extend(chr(cba[idx][i] ^ ord(' ')))
     return res
+
+# manual tweaks
+def xorkey(byte, s):
+    kg[byte] = chr(kg[byte] ^ ord(s))
+
+def tweakkey(msgidx, byteidx, targetchar):
+    kg[byteidx] = chr(cba[msgidx][byteidx] ^ ord(targetchar))
+
 kg = guesskey(cand, 0)
-og = baxor(kg, cba[-1])
+
+#kg[35] = strxor(kg[35], 'A')
+tweakkey(0, 35, 'a')
+tweakkey(0, 36, 'n')
+tweakkey(2, 50, 'e')
+tweakkey(9, 56, 't')
+tweakkey(6, 82, 'r')
+tweakkey(5, 25, 'y')
+tweakkey(5, 26, 'p')
+tweakkey(0, 7, 'f')
+tweakkey(0, 14, 't')
+tweakkey(0, 18, 'n')
+
+# xorkey(35, 'A')
+#xorkey(36, strxor('C', 'N'))
+
+for i,x in enumerate(cba):
+    print baxor(kg, x)[0:minct]
+    # print "%i: %s" % (i, baxor(kg, x)[34:minct])
+# og = baxor(kg, cba[-1])
+
+
+
