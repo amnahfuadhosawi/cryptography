@@ -23,6 +23,8 @@ def strippad(msg):
 
 def goodpad(msg):
     n = ord(msg[-1])
+    if n > 16:
+        return False
     for c in msg[-n:]:
         if(ord(c) != n):
             return False
@@ -56,9 +58,10 @@ guess = bytearray(chr(0)*len(cmsg))
 nblocks = len(cmsg)/16
 firstbyte = True
 for nblock in xrange(nblocks - 2, -1, -1):
+    print "block " + str(nblock)
     for offset in xrange(0,16): # 16
         idx = (nblock+1)*16 - offset - 1 
-        output = bytearray(cmsg)
+        output = bytearray(cmsg[:(nblock+2)*16])
 
         # set trailing pad
         for j in xrange(idx + 1, (nblock+1)*16):
@@ -75,7 +78,7 @@ for nblock in xrange(nblocks - 2, -1, -1):
             output[idx] = strxor(cmsg[idx], chr(mask))
             cipher = AES.new(key, AES.MODE_CBC)
             d = cipher.decrypt(str(output))
-
+            
             # print str(output).encode("hex")
             # print str(cmsg).encode('hex')
             # print d.encode('hex')
@@ -95,5 +98,7 @@ for nblock in xrange(nblocks - 2, -1, -1):
                 ###print "badpad"
             # if(po.query(str(output))):       # Issue HTTP query with the given argument 
             #     break
-    raise(Exception)
-#    print output.encode('hex')
+
+
+    # raise(Exception)
+    print guess
